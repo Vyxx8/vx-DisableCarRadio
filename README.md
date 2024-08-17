@@ -1,4 +1,4 @@
-# DISABLEVEHRADIO
+# Disable Default Vehicle Radios
 
 This script will disable ALL vehicle radio's (default gta radio)
 
