@@ -1,25 +1,52 @@
-QBCore = exports['qb-core']:GetCoreObject()
-local PlayerData = {}
+Citizen.CreateThread(function()
+    local lastVehicle = nil
+
+    while true do
+        local playerPed = PlayerPedId()
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+
+        if vehicle ~= 0 then
+            if vehicle ~= lastVehicle then
+                SetVehicleRadioEnabled(vehicle, false)
+                SetVehRadioStation(vehicle, "OFF")
+                lastVehicle = vehicle
+            end
+
+            if GetIsVehicleRadioActive(vehicle) then
+                SetVehicleRadioEnabled(vehicle, false)
+                SetVehRadioStation(vehicle, "OFF")
+            end
+
+            SetUserRadioControlEnabled(false)
+        else
+            lastVehicle = nil
+        end
+
+        Citizen.Wait(100)
+    end
+end)
 
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
-        if not QBCore.Functions.GetPlayerData().citizenid then
-            Citizen.Wait(5000)
-        else
-            PlayerData = QBCore.Functions.GetPlayerData()
-            break
+
+        local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
+        if vehicle ~= 0 then
+            SetVehicleRadioEnabled(vehicle, false)
+            SetVehRadioStation(vehicle, "OFF")
         end
     end
 end)
 
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(1000)
-        if IsPedInAnyVehicle(PlayerPedId()) then
-            SetUserRadioControlEnabled(false)
-            if GetPlayerRadioStationName() ~= nil then
-                SetVehRadioStation(GetVehiclePedIsIn(PlayerPedId()), "OFF")
+        Citizen.Wait(5000)
+
+        local vehicles = GetGamePool('CVehicle')
+        for _, vehicle in ipairs(vehicles) do
+            if DoesEntityExist(vehicle) then
+                SetVehicleRadioEnabled(vehicle, false)
+                SetVehRadioStation(vehicle, "OFF")
             end
         end
     end
